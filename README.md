@@ -1,5 +1,5 @@
-# Welcome to your Lovable project
 
+<<<<<<< HEAD
 ## Project info
 
 **URL**: https://lovable.dev/projects/adeed657-55ef-4993-b64c-86bc8539705e
@@ -98,3 +98,5 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+=======
+>>>>>>> 993023278a1af4a99e0beb31ecb6657a6abd0c0b
