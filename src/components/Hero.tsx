@@ -125,7 +125,7 @@ const Hero = () => {
             <p className="mt-4 text-green-400 font-semibold">✅ Airdrop successful!</p>
           )}
           {airdropStatus === 'error' && (
-            <p className="mt-4 text-red-400 font-semibold">❌ Airdrop failed. Check console.</p>
+            <p className="mt-4 text-red-400 font-semibold">❌ You are not eligible.</p>
           )}
 
           {/* Features */}
