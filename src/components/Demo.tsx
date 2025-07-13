@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Send, Heart, Star, DollarSign } from 'lucide-react';
+import { Send, Heart, Star, DollarSign, PlayCircle } from 'lucide-react';
 
 const Demo = () => {
   const [comment, setComment] = useState('');
@@ -14,6 +14,7 @@ const Demo = () => {
     { id: 3, user: "SHMWhale", message: "Keep up the great work! 💎", tip: 25, time: "5m ago" }
   ]);
   const [earnings, setEarnings] = useState(127.50);
+  const [videoStarted, setVideoStarted] = useState(false);
 
   const handleSendComment = () => {
     if (!comment.trim()) return;
@@ -48,14 +49,39 @@ const Demo = () => {
           {/* Mock Stream Interface */}
           <div className="space-y-6">
             <Card className="bg-black/50 border-gray-700 p-4">
-              <div className="aspect-video bg-gradient-to-br from-purple-900 to-blue-900 rounded-lg flex items-center justify-center">
-                <div className="text-center text-white">
-                  <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <div className="w-4 h-4 bg-white rounded-full animate-pulse"></div>
-                  </div>
-                  <h3 className="text-xl font-bold">Live Stream Demo</h3>
-                  <p className="text-gray-300">Building the Future of Web3 Streaming</p>
-                </div>
+              <div className="aspect-video bg-gradient-to-br from-purple-900 to-blue-900 rounded-lg flex items-center justify-center relative overflow-hidden">
+                {/* Video Embed or Placeholder */}
+                {videoStarted ? (
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    src="https://www.youtube.com/embed/ShYKkPPhOoc?autoplay=1"
+                    title="YouTube video player"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    className="w-full h-full rounded-lg"
+                  ></iframe>
+                ) : (
+                  <>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-gradient-to-br from-purple-900/80 to-blue-900/80">
+                      <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <div className="w-4 h-4 bg-white rounded-full animate-pulse"></div>
+                      </div>
+                      <h3 className="text-xl font-bold text-white">Live Stream Demo</h3>
+                      <p className="text-gray-300 mb-6">How to Spend Your 20s in the AI Era</p>
+                      <Button
+                        size="lg"
+                        className="bg-gradient-to-r from-green-400 to-blue-500 text-white px-8 py-3 font-semibold shadow-lg hover:scale-105 transition-all duration-300 flex items-center gap-2 text-lg"
+                        onClick={() => setVideoStarted(true)}
+                        autoFocus
+                      >
+                        <PlayCircle className="h-7 w-7 mr-2" />
+                        Start Demo
+                      </Button>
+                    </div>
+                  </>
+                )}
               </div>
             </Card>
 
@@ -76,7 +102,6 @@ const Demo = () => {
             <Card className="bg-white/5 border-white/10 p-6">
               <div className="space-y-4">
                 <h3 className="text-xl font-bold text-white mb-4">Live Chat</h3>
-                
                 {/* Comment Input */}
                 <div className="space-y-3">
                   <Input

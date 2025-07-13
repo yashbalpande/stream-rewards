@@ -10,6 +10,9 @@ import CTA from '../components/CTA';
 import Footer from '../components/Footer';
 import WalletConnection from '../components/WalletConnection';
 import Web3Demo from '../components/Web3Demo';
+import Airdrop from '../components/Airdrop';
+import AirdropHistory from '../components/AirdropHistory';
+import AirdropDemo from '../components/AirdropDemo';
 
 const Index = () => {
   return (
@@ -33,6 +36,29 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             <WalletConnection />
             <Web3Demo />
+          </div>
+        </div>
+      </section>
+
+      {/* Airdrop Section */}
+      <section className="py-20 px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl mb-4">
+              Community Airdrop
+            </h2>
+            <p className="text-lg leading-8 text-gray-300">
+              Share SHM tokens with your community members easily and securely
+            </p>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+            <div className="lg:col-span-2">
+              <Airdrop />
+            </div>
+            <div className="space-y-8">
+              <AirdropHistory />
+              <AirdropDemo />
+            </div>
           </div>
         </div>
       </section>

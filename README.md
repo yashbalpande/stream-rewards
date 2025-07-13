@@ -59,6 +59,33 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- Ethers.js (Web3 integration)
+- Shardeum blockchain integration
+
+## Features
+
+### Community Airdrop
+The application includes a comprehensive airdrop feature that allows users to:
+
+- **Connect MetaMask Wallet**: Seamlessly connect to Shardeum Sphinx Dappnet
+- **Bulk Import/Export**: Import recipient lists via CSV or bulk text input
+- **Individual Management**: Add/remove recipients manually with real-time validation
+- **Transaction History**: Track all airdrop transactions with status monitoring
+- **Balance Validation**: Automatic balance checking before executing airdrops
+- **Example Templates**: Pre-built scenarios for common airdrop use cases
+
+### Key Components
+- `Airdrop.tsx`: Main airdrop interface with recipient management
+- `AirdropHistory.tsx`: Transaction history and status tracking
+- `AirdropUtils.tsx`: CSV import/export functionality
+- `AirdropDemo.tsx`: Example scenarios and usage guide
+
+### Usage
+1. Connect your MetaMask wallet to Shardeum network
+2. Add recipients manually or import via CSV
+3. Review total amount and balance
+4. Execute airdrop to send tokens to all recipients
+5. Monitor transaction status in the history panel
 
 ## How can I deploy this project?
 
