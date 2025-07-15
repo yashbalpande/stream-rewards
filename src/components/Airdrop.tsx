@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Gift, Users, Send, AlertCircle, CheckCircle } from 'lucide-react';
+import { Gift, Users, Send, AlertCircle, CheckCircle, Plus, Trash2, Shuffle } from 'lucide-react';
 import { useWallet } from '@/hooks/useWallet';
 import { toast } from '@/hooks/use-toast';
 import { ethers } from 'ethers';
@@ -18,6 +18,14 @@ interface AirdropRecipient {
   isValid: boolean;
 }
 
+// AddressBookEntry type
+interface AddressBookEntry {
+  address: string;
+  label?: string;
+}
+
+const ADDRESS_BOOK_KEY = 'airdrop_address_book';
+
 const Airdrop = () => {
   const { address, balance, isConnected, signer } = useWallet();
   const [recipients, setRecipients] = useState<AirdropRecipient[]>([
@@ -26,6 +34,22 @@ const Airdrop = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [totalAmount, setTotalAmount] = useState('0');
   const historyRef = useRef<{ addTransaction: (tx: any) => void }>(null);
+
+  // Address book state
+  const [addressBook, setAddressBook] = useState<AddressBookEntry[]>([]);
+  const [newAddress, setNewAddress] = useState('');
+  const [newLabel, setNewLabel] = useState('');
+
+  // Load address book from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem(ADDRESS_BOOK_KEY);
+    if (stored) setAddressBook(JSON.parse(stored));
+  }, []);
+
+  // Save address book to localStorage
+  useEffect(() => {
+    localStorage.setItem(ADDRESS_BOOK_KEY, JSON.stringify(addressBook));
+  }, [addressBook]);
 
   const validateAddress = (address: string): boolean => {
     return ethers.isAddress(address);
@@ -103,6 +127,51 @@ const Airdrop = () => {
       title: "Recipients Imported",
       description: `Imported ${importedRecipients.length} recipients`,
     });
+  };
+
+  // Add address to address book
+  const handleAddToAddressBook = () => {
+    if (!validateAddress(newAddress)) {
+      toast({ title: 'Invalid Address', description: 'Please enter a valid address', variant: 'destructive' });
+      return;
+    }
+    if (addressBook.some(entry => entry.address === newAddress)) {
+      toast({ title: 'Duplicate Address', description: 'Address already in address book', variant: 'destructive' });
+      return;
+    }
+    setAddressBook([{ address: newAddress, label: newLabel }, ...addressBook]);
+    setNewAddress('');
+    setNewLabel('');
+  };
+
+  // Remove address from address book
+  const handleRemoveFromAddressBook = (address: string) => {
+    setAddressBook(addressBook.filter(entry => entry.address !== address));
+  };
+
+  // Add address book entry to recipients
+  const handleAddBookEntryToRecipients = (entry: AddressBookEntry) => {
+    setRecipients([
+      ...recipients,
+      { address: entry.address, amount: '', isValid: false },
+    ]);
+  };
+
+  // Randomly select N addresses from address book and add to recipients
+  const handleSelectRandomRecipients = () => {
+    if (addressBook.length === 0) {
+      toast({ title: 'Address Book Empty', description: 'Add addresses to the address book first', variant: 'destructive' });
+      return;
+    }
+    const n = parseInt(prompt('How many random recipients? (max: ' + addressBook.length + ')') || '0', 10);
+    if (isNaN(n) || n <= 0 || n > addressBook.length) {
+      toast({ title: 'Invalid Number', description: 'Enter a valid number of recipients', variant: 'destructive' });
+      return;
+    }
+    // Shuffle and pick n
+    const shuffled = [...addressBook].sort(() => Math.random() - 0.5);
+    const selected = shuffled.slice(0, n);
+    setRecipients(selected.map(entry => ({ address: entry.address, amount: '', isValid: false })));
   };
 
   const executeAirdrop = async () => {
@@ -204,6 +273,52 @@ const Airdrop = () => {
         </p>
       </CardHeader>
       <CardContent className="space-y-6">
+        {/* Address Book Section */}
+        <div className="mb-6 p-4 rounded-lg border border-muted-foreground/10 bg-muted/30">
+          <div className="flex items-center gap-2 mb-2">
+            <h3 className="font-semibold text-base flex-1 flex items-center gap-2">
+              <Users className="h-4 w-4" /> Address Book
+            </h3>
+            <Button variant="outline" size="sm" onClick={handleSelectRandomRecipients} disabled={addressBook.length === 0}>
+              <Shuffle className="h-4 w-4 mr-1" /> Select Random Recipients
+            </Button>
+          </div>
+          <div className="flex gap-2 mb-2">
+            <Input
+              placeholder="0x..."
+              value={newAddress}
+              onChange={e => setNewAddress(e.target.value)}
+              className="flex-1"
+            />
+            <Input
+              placeholder="Label (optional)"
+              value={newLabel}
+              onChange={e => setNewLabel(e.target.value)}
+              className="flex-1"
+            />
+            <Button variant="default" size="sm" onClick={handleAddToAddressBook}>
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="max-h-32 overflow-y-auto space-y-1">
+            {addressBook.length === 0 ? (
+              <div className="text-xs text-muted-foreground">No addresses saved yet.</div>
+            ) : (
+              addressBook.map((entry, idx) => (
+                <div key={entry.address} className="flex items-center gap-2 text-xs bg-card/60 rounded px-2 py-1">
+                  <span className="font-mono">{entry.address.slice(0, 6)}...{entry.address.slice(-4)}</span>
+                  {entry.label && <span className="ml-1 text-muted-foreground">({entry.label})</span>}
+                  <Button variant="ghost" size="xs" onClick={() => handleAddBookEntryToRecipients(entry)}>
+                    Add
+                  </Button>
+                  <Button variant="ghost" size="xs" onClick={() => handleRemoveFromAddressBook(entry.address)}>
+                    <Trash2 className="h-3 w-3 text-red-500" />
+                  </Button>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
         {!isConnected ? (
           <div className="text-center py-8">
             <Users className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
